@@ -38,7 +38,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { logout } from '../../store/slices/authSlice';
+import { logout, clearAuth } from '../../store/slices/authSlice';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -80,11 +80,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap();
-      navigate('/login');
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Logout API call failed, but proceeding with local logout:', error);
+      // Even if the API call fails, we should still clear local auth state
+      dispatch(clearAuth());
     }
     handleProfileMenuClose();
+    navigate('/login');
   };
 
   const drawer = (
